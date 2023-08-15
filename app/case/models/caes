@@ -1,0 +1,46 @@
+""" Model od case class"""
+from django.db import models
+from subject.models.subject import Person, Company, Subject
+
+
+TYPE = (('eviction', 'eksmisja'), ('payment', 'o zapłatę'),
+            ('divorce', 'rozwód'), ('insolvency', 'zgłoszenie wierzytenlość')
+)
+
+RESULT = (
+    ('new', 'nowa'),
+    ('begin', 'rozpoczęta'),
+    ('won', 'wygrana'),
+    ('lose', 'przegrana'),
+    ('enforced', 'egzekwowana'),
+    ('end', 'zakończona')
+)
+
+APPEARS_AS = (
+    ('plaintiff', 'powód'),
+    ('defendant', 'pozwany'),
+)
+
+
+class CaseSubject(models.Model):
+    """ entities in the case """
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    case = models.ForeignKey('Case', on_delete=models.CASCADE)
+    appears_as =  models.CharField(max_length=15, choices=APPEARS_AS)
+
+
+class Case(models.Model):
+    signature = models.CharField(max_length=30, null=True, blank=True, unique=True,
+                                 verbose_name='sygnatura kancelarii'
+                                 )
+
+    type = models.CharField(max_length=60, choices=TYPE, null=True, blank=True, verbose_name='typ sprawy', default=None)
+    result = models.CharField(max_length=60, choices=RESULT, default=RESULT[0][0], verbose_name='wynik: sprawy')
+    create_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    bailiff = models.ForeignKey(Bailiff, null=True, blank=True, verbose_name='komornik', on_delete=models.SET_NULL,
+                                default=None)
+    description = models.CharField(max_length=250, null=True, blank=True, verbose_name='opis', default=None)
+
+    def __str__(self):
+        return f"{self.signature}"

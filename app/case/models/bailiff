@@ -1,0 +1,12 @@
+from django.db import models
+from subject.models.adress import Adress
+
+
+# Komornik sądowy
+class Bailiff(models.Model):
+    name = models.CharField(max_length=60, verbose_name="imię i nazwisko")
+    office_name = models.CharField(max_length=200, verbose_name='nazwa kancelarii', default='')
+    adress = models.ForeignKey(Adress, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.name}"
