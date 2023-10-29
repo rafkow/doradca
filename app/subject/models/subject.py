@@ -1,11 +1,11 @@
 """ Subject model class with extend class"""
 from django.db import models
-from .adress import Adress
+from .address import Address
 
 
 class Subject(models.Model):
     creating_date = models.DateTimeField(auto_now_add=True)
-    adress = models.ForeignKey(Adress, on_delete=models.CASCADE)
+    adress = models.ForeignKey(Address, on_delete=models.CASCADE)
 
 
     class Meta:
