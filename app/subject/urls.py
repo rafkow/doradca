@@ -1,7 +1,13 @@
-from django.urls import path
-from subject import views
+from django.urls import path, include
+from subject import views, api
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register('address', api.AddressViewset)
 
 
 urlpatterns = [
-    path('', views.create_person, name='index')
+    path('', include(router.urls)),
+    path('api/', api.getData ),
+    path('api/add', api.addAddress ),
 ]

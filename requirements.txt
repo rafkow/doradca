@@ -1,4 +1,6 @@
 Django
 requests
+djangorestframework
 psycopg2-binary
 flake8
+drf_spectacular

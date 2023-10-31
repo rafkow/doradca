@@ -7,6 +7,7 @@ class AddressTest(TestCase):
     """Test the test"""
 
     def test_create_address(self):
+        """Test of crateing address, """
         address = Address(
             street = "Toruńska",
             house_number = "45"
@@ -31,7 +32,6 @@ class AddressTest(TestCase):
             street = "Toruńska",
             house_number = "45"
         )
-
 
         with self.assertRaises(IntegrityError):
             duplicate_address.save()

@@ -5,7 +5,7 @@ from .address import Address
 
 class Subject(models.Model):
     creating_date = models.DateTimeField(auto_now_add=True)
-    adress = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
 
 
     class Meta:
