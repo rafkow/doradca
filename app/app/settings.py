@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'documents',
     'website',
     'core',
+    'user',
 ]
 
 MIDDLEWARE = [
