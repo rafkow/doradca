@@ -1,6 +1,6 @@
 """ Subject model class with extend class"""
 from django.db import models
-from .address import Address
+from subject.models.address import Address
 
 
 class Subject(models.Model):
@@ -30,3 +30,12 @@ class Company(Subject):
 
     def __str__(self):
         return f'{self.name}'
+
+
+# Komornik sądowy
+class Bailiff(Person):
+    office_name = models.CharField(max_length=200, verbose_name='nazwa kancelarii', default='')
+    adress = models.ForeignKey(Address, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.office_name}"

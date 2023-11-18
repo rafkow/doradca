@@ -1,6 +1,16 @@
-from django.shortcuts import render
-from django.http.response import HttpResponse
+from rest_framework import viewsets
+from subject.models.address import Address
+from subject.models.subject import Person
+from subject.serializers import AddressSerializer, PersonSerializer
 
-# Create your views here.
-def create_person(request):
-    return HttpResponse("hello darknes my old friend")
+
+class AddressViewset(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+
+
+class PersonViewset(viewsets.ModelViewSet):
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer
+
+

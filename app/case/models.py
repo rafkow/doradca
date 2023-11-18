@@ -1,6 +1,9 @@
 """ Model od case class"""
 from django.db import models
-from subject.models.subject import Person, Company, Subject
+from subject.models.subject import Person, Company, Bailiff, Subject
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 TYPE = (('eviction', 'eksmisja'), ('payment', 'o zapłatę'),
@@ -22,14 +25,11 @@ APPEARS_AS = (
 )
 
 
-class CaseSubject(models.Model):
-    """ entities in the case """
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    case = models.ForeignKey('Case', on_delete=models.CASCADE)
-    appears_as =  models.CharField(max_length=15, choices=APPEARS_AS)
-
-
 class Case(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
     signature = models.CharField(max_length=30, null=True, blank=True, unique=True,
                                  verbose_name='sygnatura kancelarii'
                                  )
@@ -44,3 +44,18 @@ class Case(models.Model):
 
     def __str__(self):
         return f"{self.signature}"
+
+
+class CaseSubject(models.Model):
+    """ entities in the case """
+    subject = models.ForeignKey(ContentType,
+                                on_delete=models.CASCADE,
+                                limit_choices_to={'model__in': ['person', 'company']}
+                                )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('subject', 'object_id')
+    case = models.ForeignKey('Case',
+                            on_delete=models.CASCADE,
+                            related_name='subjects'
+                             )
+    appears_as =  models.CharField(max_length=14, choices=APPEARS_AS)
