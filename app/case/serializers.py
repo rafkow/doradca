@@ -7,10 +7,15 @@ class CaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Case
-        fields = ['id', 'signature', 'type', 'description']
+        fields = ['id', 'signature', 'type']
         read_only_fields = ['id']
 
 
+class CaseDetailsSerializer(CaseSerializer):
+    """ Exten of Case Serializer"""
+
+    class Meta(CaseSerializer.Meta):
+        fields = CaseSerializer.Meta.fields + ['description']
 
 
 

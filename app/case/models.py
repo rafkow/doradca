@@ -28,11 +28,14 @@ APPEARS_AS = (
 class Case(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
-    signature = models.CharField(max_length=30, null=True, blank=True, unique=True,
-                                 verbose_name='sygnatura kancelarii'
-                                 )
+    signature = models.CharField(
+        max_length=30, 
+        null=True, blank=True, 
+        unique=True,
+        verbose_name='sygnatura kancelarii',
+    )
 
     type = models.CharField(max_length=60, choices=TYPE, null=True, blank=True, verbose_name='typ sprawy', default=None)
     result = models.CharField(max_length=60, choices=RESULT, default=RESULT[0][0], verbose_name='wynik: sprawy')
