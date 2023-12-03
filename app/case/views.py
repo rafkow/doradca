@@ -13,7 +13,7 @@ class CaseViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def gat_queryset(self):
+    def get_queryset(self):
         return self.queryset.filter(user=self.request.user).order_by('-id')
 
     def get_serializer_class(self):

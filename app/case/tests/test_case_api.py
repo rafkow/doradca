@@ -56,6 +56,16 @@ class PrivateCaseAPITest(TestCase):
         self.user = create_user(email='user@example.com', password='test123')
         self.client.force_authenticate(self.user)
 
+    def test_recivine_cases(self):
+        create_case(user=self.user)
+
+        res = self.client.get(CASE_URL)
+        cases = Case.objects.all().order_by('id')
+        serializer = CaseSerializer(cases, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
     def test_creating_case(self):
         """Test create case by authenticated user"""
         payload = {
@@ -90,4 +100,55 @@ class PrivateCaseAPITest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+    def test_get_case_limeited_to_user(self):
+        """Test getting cases is limited to authenticated user"""
+        other_user = create_user(email='other@example.com', password='test123')
+        create_case(user=self.user)
+        payload = {
+            'signature': 'M/12/23'
+        }
+        create_case(user=other_user, **payload)
+
+        res = self.client.get(CASE_URL)
+
+        cases = Case.objects.filter(user=self.user)
+        serializer = CaseSerializer(cases, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
+    def test_create_case(self):
+        """Test create case"""
+        payload = {
+            'signature': 'A/1/1',
+            'type': TYPE[0][0],
+            'description': 'casual case',
+        }
+
+        res = self.client.post(CASE_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        case = Case.objects.get(id=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(getattr(case, k), v)
+        self.assertEqual(case.user, self.user)
+
+    def test_partial_case(self):
+        """Test partial update of a case."""
+        case = create_case(
+            user=self.user,
+            signature='Q/1/2',
+            type=TYPE[0][0],
+            description = 'sample case'
+        )
+
+        payload = {'description': 'new case desc'}
+        url = detail_url(case.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        case.refresh_from_db()
+        self.assertEqual(case.description, payload['description'])
+        self.assertEqual(case.signature, 'Q/1/2')
+        self.assertEqual(case.user, self.user)
 
