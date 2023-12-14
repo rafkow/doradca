@@ -1,3 +1,13 @@
 from django.shortcuts import render
+from case.models import Case
 
-# Create your views here.
+
+
+def index(request):
+    return render(request, 'index.html')
+
+def case(request):
+    context = {
+        'cases': Case.objects.all()
+    }
+    return render(request, 'case/list.html', context)

@@ -26,3 +26,12 @@ class CaseViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+class CaseSubjectViewSet(viewsets.ModelViewSet):
+    """View od case objects"""
+    serializer_class = serializers.CaseSubjectSerializer
+    queryset =  CaseSubject.objects.all()
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+
+

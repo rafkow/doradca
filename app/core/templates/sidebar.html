@@ -1,0 +1,56 @@
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'register:persons' %}">
+                <i class="bi bi-people"></i>
+                <span>Lista osób</span>
+            </a>
+        </li>
+
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link collapsed" href="{% url 'register:data_import' %}">-->
+<!--                <i class="bi bi-menu-button-wide"></i>-->
+<!--                <span>Import danych</span>-->
+<!--            </a>-->
+<!--        </li>-->
+
+
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'register:create' %}">
+                <i class="bi bi-person-plus"></i>
+                <span>Nowa osoba </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'register:company' %}">
+                <i class="bi bi-building"></i>
+                <span>Lista firm </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'register:case' %}">
+                <i class="bi bi-files"></i>
+                <span>Sprawy</span>
+            </a>
+        </li><!-- End F.A.Q Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'register:bailiff' %}">
+                <i class="bi bi-file-earmark-lock"></i>
+                <span>Komornicy</span>
+            </a>
+        </li><!-- End Contact Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="ri-admin-line"></i>
+                <span>Wierzyciele</span>
+            </a>
+        </li><!-- End Register Page Nav -->
+    </ul>
+</aside><!-- End Sidebar-->

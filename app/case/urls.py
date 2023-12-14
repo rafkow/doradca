@@ -9,6 +9,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('case', views.CaseViewSet)
+router.register('subjects', views.CaseSubjectViewSet)
 
 app_name = 'case'
 

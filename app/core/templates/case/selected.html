@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load l10n %}
+
+ <div class="card">
+      <div class="card-body">
+          <table class="table">
+              <thead>
+              <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Sygnatura</th>
+                  <th scope="col">Typ</th>
+                  <th scope="col">status sprawy</th>
+                  <th scope="col">data pierwszego wpisu</th>
+                  {% if case.bailiff %}
+                  <th scope="col">Komornik</th>
+                  {% endif %}
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                  <th scope="row">1</th>
+                  <td>{{ case.signature }}</td>
+                  <td>{{ case.gat_type_display }}</td>
+                  <td>{{ case.get_result_display }}</td>
+                  <td>{{ case.create_date|localize }}</td>
+                  {% if case.bailiff %}
+                    <td>{{ case.bailiff }}</td>
+                  {% endif %}
+              </tr>
+          </table>
+      </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Przypisani do sprawy </h5>
+        <div class="row">
+            <div class="col-6">
+                <div class="d-flex justify-content-around">
+                <div class="h4">pozwani</div>
+                <div>
+                    <button id="accused_person" type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#accused_person_modal">dodaj osobę <i class="ri-add-fill"></i> </button>
+                    <button id="accused_company" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#accused_company_modal">dodaj firmę<i class="ri-add-fill"></i> </button>
+                </div>
+            </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-around">
+                <div class="h4">powód</div>
+                <div>
+                    <button id="prosecutor_person" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#prosecutor_person_modal">dodaj osobę <i class="ri-add-fill"></i></button>
+                    <button id="prosecutor_company" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#prosecutor_company_modal">dodaj firmę <i class="ri-add-fill"></i> </button>
+                </div>
+                </div>
+        </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col">
+                {% for company in case.accused_companies.all %} <h5>{{ company }}</h5> {% endfor %}
+                {% for person in case.accused_persons.all %}
+                    <h5>
+                        <a href="{% url 'register:person' person.id %}">
+                            <i class="bi bi-file-earmark-person"></i>
+                        </a>
+                        {{ person }}
+                    </h5>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% for company in case.prosecutor_companies.all %} <h5>{{ company }}</h5> {% endfor %}
+                {% for person in case.prosecutor_persons.all %} <h5>{{ person }}</h5> {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"> Portal sądowy </h5>
+        {% if cort_reference_number_form %}
+        <form action="{% url 'register:court_reference_number' %}" method="get">
+            {{ cort_reference_number_form }}
+            <button class="btn btn-primary my-1" type="submit">Przypisz sygnaturę</button>
+        </form>
+        {% endif %}
+
+        {% if court %}
+        <div class="row">
+            <div class="col">
+                <p>{{ court.signature }}</p>
+                <p>{{ court.court_name }}</p>
+                <p>{{ court.receipt_date }}</p>
+                {% if court.finish_date %}
+                    <p>{{ court.finish_date }}</p>
+                {% else %}
+                    <p>sprawa jeszcze nie zakonczona</p>
+                {% endif %}
+                <p>{{ court.judge_name }}</p>
+                <p>{{ court.subject }}</p>
+            </div>
+            <div class="col"></div>
+
+            <div class="col">
+            {% if assign_bailiff_form %}
+                <form action="{% url 'register:bailiff_assign' %}" method="get">
+                    {% csrf_token %}
+                    <input type="hidden" name="case_id" value="{{ case.id }}">
+                    {{ assign_bailiff_form }}
+                    <button class="btn btn-primary">przypisz komornika</button>
+                </form>
+            {% else %}
+                <p>komornik</p>
+                {{ case.bailiff }}
+            {% endif %}
+            </div>
+
+
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+{% if not refund %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"> zadeklaruj koszty sprawy <i class="ri-add-fill"></i> </h5>
+        <form action="{% url 'payments:refund' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+            {% for field in form %}
+            <div class="col-md-2">
+                {{ field.label }}
+                {{ field }}
+            </div>
+            {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary my-3">utwórz</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">koszty sprawy </h5>
+        <h5 class="d-inline">{{ refund }}</h5>
+        <a href="{% url 'payments:enforcement_request' case.id %}" class="btn btn-primary m-2">wygeneruj dokument wszczęcia egzekucji</a>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>utworzono</th>
+                <th>koszty sądowe</th>
+                <th>koszty klauzuli</th>
+                <th>odsetki</th>
+                <th>koszty zast. w egz</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ refund.create_date}}</td>
+                    <td>{{ refund.court_costs}}</td>
+                    <td>{{ refund.clause_costs }}</td>
+                    <td>{{ refund.interest }}</td>
+                    <td>{{ refund.attorney_representation_costs }}</td>
+                </tr>
+                {% for pay in refund.bill.all %}
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end">spłacono:</td>
+                    <td>{{ pay.payment_date }}</td>
+                    <td>{{ pay.value }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="1"></td>
+                    <td><strong>razem:</strong></td>
+                    <td>rachunek na: <strong>{{ refund.amount }}</strong></td>
+                    <td>spłacono <strong>{{ refund.recapitulation }}</strong></td>
+                    <td>pozostało <strong> {{ refund.result}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payment_modal">spłata</button>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <div class="row">
+                <div class="col-2"><h5 class="card-title">notatka do sprawy {{ case.signature }} </h5></div>
+                <div class="col"><button class="btn btn-primary mt-3" type="submit">zapisz notatkę <i class="bi bi-chat-left-text"></i></button></div>
+            </div>
+                {% csrf_token %}
+                {{ case_note_form }}
+        </form>
+
+    </div>
+</div>
+
+
+
+<!-- modal -->
+<div class="modal fade" id="payment_modal" tabindex="-1" aria-labelledby="paymentmodallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">spłata</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+        <form action="{% url 'payments:payment' %}" method="post">
+      <div class="modal-body">
+            {% csrf_token %}
+            {{ form }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">anuluj</button>
+        <button type="submit" class="btn btn-primary">zatwierdź wpłatę</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="accused_person_modal" tabindex="-1" aria-labelledby="examplemodallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="accused_person_modal_label">przypisz pozwanego so sprawy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="accused_persons_table" class="table w-100">
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary">save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="accused_company_modal" tabindex="-1" aria-labelledby="examplemodallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="accused_company_modal_label">przypisz pozwanego so sprawy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="accused_company_table" class="table w-100">
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary">save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="prosecutor_company_modal" tabindex="-1" aria-labelledby="examplemodallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="prosecutor_company_modal_label">przypisz pozwanego so sprawy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="prosecutor_company_table" class="table w-100">
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary">save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="prosecutor_person_modal" tabindex="-1" aria-labelledby="examplemodallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="prosecutor_person_modal_label">przypisz pozwanego so sprawy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="prosecutor_person_table" class="table w-100">
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary">save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+<script>
+var accused_person_exist = false;
+$('#accused_person').on('click', function() {
+    if(!accused_person_exist){
+        $.ajax('{% url 'register:api_person' %}', // request url
+        {
+            success: function (data, status, xhr) {// success callback function
+                accused_person_exist = true;
+                $('#accused_persons_table').datatable( {
+                    "data" : data,
+                    "dom": '<"top"f>rt<"bottom"i><"clear">',
+                    "columns" : [
+                        {"data":"first_name", render: function (data, type, row, meta) { return row.first_name+' '+row.last_name;}},
+                        {"data":"id", "name":"dodaj",
+                             render: function (data, type, row, meta) {
+                                    return '<a href=/case/assign?signature={{ case.signature }}&accused_person='+data+'> dodaj </a>';
+                             }
+                        }
+                    ]
+            });}
+        });
+    }
+});
+
+var accused_company_exist = false;
+$('#accused_company').on('click', function() {
+    if(!accused_company_exist){
+        $.ajax('{% url 'register:api_company' %}',
+        {
+            success: function (data, status, xhr) {// success callback function
+                accused_company_exist = true;
+                $('#accused_company_table').datatable( {
+                    "data" : data,
+                    "dom": '<"top"f>rt<"bottom"i><"clear">',
+                    "columns" : [
+                        {"data":"name"},
+                        {"data":"id", "name":"dodaj",
+                             render: function (data, type, row, meta) {
+                                    return '<a href=/case/assign?signature={{ case.signature }}&accused_company='+data+'> dodaj </a>';
+                             }
+                        }
+                    ]
+            });}
+        });
+    }
+});
+
+var prosecutor_person_exist = false;
+$('#prosecutor_person').on('click', function() {
+    if(!prosecutor_person_exist){
+        $.ajax('{% url 'register:api_person' %}', // request url
+        {
+            success: function (data, status, xhr) {// success callback function
+                prosecutor_person_exist = true;
+                $('#prosecutor_person_table').datatable( {
+                    "data" : data,
+                    "dom": '<"top"f>rt<"bottom"i><"clear">',
+                    "columns" : [
+                        {"data":"first_name", render: function (data, type, row, meta) { return row.first_name+' '+row.last_name;}},
+                        {"data":"id", "name":"dodaj",
+                             render: function (data, type, row, meta) {
+                                    return '<a href=/case/assign?signature={{ case.signature }}&prosecutor_person='+data+'> dodaj </a>';
+                             }
+                        }
+                    ]
+            });}
+        });
+    }
+});
+
+var prosecutor_company_exist = false;
+$('#prosecutor_company').on('click', function() {
+    if(!prosecutor_company_exist){
+        $.ajax('{% url 'register:api_company' %}',
+        {
+            success: function (data, status, xhr) {// success callback function
+                prosecutor_company_exist = true;
+                $('#prosecutor_company_table').datatable( {
+                    "data" : data,
+                    "dom": '<"top"f>rt<"bottom"i><"clear">',
+                    "columns" : [
+                        {"data":"name"},
+                        {"data":"id", "name":"dodaj",
+                             render: function (data, type, row, meta) {
+                                    return '<a href=/case/assign?signature={{ case.signature }}&prosecutor_company='+data+'> dodaj </a>';
+                             }
+                        }
+                    ]
+            });}
+        });
+    }
+});
+</script>
+{% endblock %}

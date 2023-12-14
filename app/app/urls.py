@@ -28,5 +28,5 @@ urlpatterns = [
          ),
     path('api/user/', include('user.urls')),
     path('api/case/', include('case.urls')),
-
+    path('', include('core.urls')),
 ]

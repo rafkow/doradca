@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+
+<table id="table" class="table">
+  <thead>
+  <tr>
+    <th>numer</th> <th>sygnatura</th> <th>status</th> <th>typ sprawy</th> <th></th>
+  </tr>
+  </thead>
+  <tbody>
+{% for p in cases %}
+<tr>
+  <td><p>{{ p.id }}</p></td> <td><p>{{ p }}</p> </td> <td>{{ p.get_result_display }}</td> <td> {{ p.get_type_display }}</td>
+  <td><a href="{% url 'core:case' p.id  %}" class="p"> szczegóły </a></td>
+</tr>
+{% endfor %}
+  </tbody>
+</table>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+<script>
+  $(document).ready( function () {
+    oTable = $('#table').DataTable({
+      "dom": '<"top"l>rt<"bottom"ip><"clear">',
+      searching: true,
+      "paging":   true,
+      "ordering": true,
+      "pageLength": 15,
+      "lengthMenu": [[15, 25, 50, 100, 500],[15, 25, 50, 100, 500]],
+      "info":     true
+    });
+    $('#search-input').keyup(function(){
+          oTable.search($(this).val()).draw() ;
+    })
+  });
+</script>
+{% endblock  %}

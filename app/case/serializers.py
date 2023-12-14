@@ -18,4 +18,11 @@ class CaseDetailsSerializer(CaseSerializer):
         fields = CaseSerializer.Meta.fields + ['description']
 
 
+class CaseSubjectSerializer(serializers.ModelSerializer):
+    """Serializer of CaseSubject model"""
+
+    class Meta:
+        model = CaseSubject
+        fields = '__all__'
+        read_only_fields = ['id']
 
