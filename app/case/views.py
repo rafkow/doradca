@@ -8,16 +8,17 @@ from rest_framework.permissions import IsAuthenticated
 
 class CaseViewSet(viewsets.ModelViewSet):
     """View od case objects"""
+
     serializer_class = serializers.CaseDetailsSerializer
-    queryset =  Case.objects.all()
+    queryset = Case.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by('-id')
+        return self.queryset.filter(user=self.request.user).order_by("-id")
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return serializers.CaseSerializer
         return self.serializer_class
 
@@ -28,10 +29,8 @@ class CaseViewSet(viewsets.ModelViewSet):
 
 class CaseSubjectViewSet(viewsets.ModelViewSet):
     """View od case objects"""
+
     serializer_class = serializers.CaseSubjectSerializer
-    queryset =  CaseSubject.objects.all()
+    queryset = CaseSubject.objects.all()
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
-
-
-

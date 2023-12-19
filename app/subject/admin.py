@@ -7,4 +7,3 @@ admin.site.register(Address)
 admin.site.register(Person)
 admin.site.register(Company)
 admin.site.register(Bailiff)
-

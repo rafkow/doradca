@@ -1,3 +1,6 @@
+"""
+Case models serializer
+"""
 from rest_framework import serializers
 from case.models import Case, CaseSubject
 
@@ -7,15 +10,15 @@ class CaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Case
-        fields = ['id', 'signature', 'type']
-        read_only_fields = ['id']
+        fields = ["id", "signature", "type"]
+        read_only_fields = ["id"]
 
 
 class CaseDetailsSerializer(CaseSerializer):
-    """ Exten of Case Serializer"""
+    """Extend of Case Serializer"""
 
     class Meta(CaseSerializer.Meta):
-        fields = CaseSerializer.Meta.fields + ['description']
+        fields = CaseSerializer.Meta.fields + ["description"]
 
 
 class CaseSubjectSerializer(serializers.ModelSerializer):
@@ -23,6 +26,5 @@ class CaseSubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CaseSubject
-        fields = '__all__'
-        read_only_fields = ['id']
-
+        fields = "__all__"
+        read_only_fields = ["id"]

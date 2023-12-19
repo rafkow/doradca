@@ -7,11 +7,8 @@ class AddressTest(TestCase):
     """Test the test"""
 
     def test_create_address(self):
-        """Test of crateing address, """
-        address = Address(
-            street = "Toruńska",
-            house_number = "45"
-        )
+        """Test of creating address,"""
+        address = Address(street="Toruńska", house_number="45")
 
         address.save()
 
@@ -19,20 +16,12 @@ class AddressTest(TestCase):
 
         self.assertEqual(address.street, saved_address.street)
 
-
-    def test_duplicate_address_reise_integrity_error(self):
-        address = Address(
-            street = "Toruńska",
-            house_number = "45"
-        )
+    def test_duplicate_address_raise_integrity_error(self):
+        address = Address(street="Toruńska", house_number="45")
 
         address.save()
 
-        duplicate_address = Address(
-            street = "Toruńska",
-            house_number = "45"
-        )
+        duplicate_address = Address(street="Toruńska", house_number="45")
 
         with self.assertRaises(IntegrityError):
             duplicate_address.save()
-
